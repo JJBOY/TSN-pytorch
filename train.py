@@ -1,5 +1,9 @@
 from torch.nn.utils import clip_grad_norm
-from utils import*
+from utils import *
+import time
+import torch
+device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 def train(train_loader,model,criterion,optimizer,epoch,clip_gradient=None):
     batch_time = AverageMeter()
     data_time = AverageMeter()
@@ -14,8 +18,10 @@ def train(train_loader,model,criterion,optimizer,epoch,clip_gradient=None):
 
         target=target.to(device)
         data=data.to(device)
+        
 
         output=model(data)
+        print(output.shape,target.shape)
         loss=criterion(output,target)
 
         prec1,prec5=accuracy(output.data,target,topk=(1,5))
@@ -59,7 +65,7 @@ def validate(val_loader,model,criterion,epoch):
     end=time.time()
 
     with torch.no_grad():
-        for i,(data,target) in enumerate(train_loader):
+        for i,(data,target) in enumerate(val_loader):
             data_time.update(time.time()-end)
             target=target.to(device)
             data=data.to(device)

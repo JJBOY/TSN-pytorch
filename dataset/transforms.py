@@ -32,7 +32,7 @@ class GroupRandomCrop(object):
 class GroupScale(object):
     #放缩到的size只保证最短的边是size，宽高等比缩放
     def __init__(self, size,interpolation=Image.BILINEAR):
-        self.worker=torchvision.transforms.Scale(size,interpolation)
+        self.worker=torchvision.transforms.Resize(size,interpolation)
     def __call__(self,img_group):
         return [self.worker(img) for img in img_group]
         
@@ -87,7 +87,7 @@ class GroupMultiScaleCrop(object):
         #fix_crop和more_fix_crop是用来选择偏移的
         #从None->fix_crop->more_fix_crop，截取的位置越来越随机
         
-        image_w,image_h=im_size[0],image_size[1]
+        image_w,image_h=im_size[0],im_size[1]
         #find a crop size
         base_size=min(image_w,image_h)
         crop_sizes=[int(base_size*x) for x in self.scales]
@@ -105,7 +105,7 @@ class GroupMultiScaleCrop(object):
             w_offset=random.randint(0,image_w-crop_pair[0])
             h_offset=random.randint(0,image_h-crop_pair[1])
         else:
-            w_offset,h_offset=self._sample_fix_offset(image_w,image_h)
+            w_offset,h_offset=self._sample_fix_offset(image_w,image_h,crop_pair[0],crop_pair[1])
         return crop_pair[0],crop_pair[1],w_offset,h_offset
     
     def _sample_fix_offset(self,image_w,image_h,crop_w,crop_h):
@@ -125,7 +125,7 @@ class GroupMultiScaleCrop(object):
         ret.append((2*w_step,2*h_step))
         
         if more_fix_crop:
-            ret.append(0,2*h_step)
+            ret.append((0,2*h_step))
             ret.append((4*w_step,2*h_step))
             ret.append((2*w_step,4*h_step))
             ret.append((2*w_step,0*h_step))

@@ -3,7 +3,7 @@ import torch.utils.data as data
 from PIL import Image
 import os
 import numpy as np 
-
+import random
 
 class VideoRecord(object):
     def __init__(self, row):
@@ -61,7 +61,7 @@ class TSNDataSet(data.Dataset):
         average_duration=(record.num_frames-self.new_length+1)//self.num_segments
         if average_duration>0:
             offsets=np.multiply(list(range(self.num_segments)),average_duration)+\
-                    random.randint(average_duration,size=self.num_segments)
+                    np.random.randint(0,average_duration,size=self.num_segments)
         elif record.num_frames>self.num_segments if self.modality=='RGB' else self.new_length:
             offsets=np.sort(randint(record.num_segments-self.new_length+1,size=self.num_segments)) 
         else:
@@ -98,7 +98,7 @@ class TSNDataSet(data.Dataset):
             return [x_img, y_img]
 
     def _parse_list(self):
-        self.video_list=[VideoRecord(x.strip().split(' ')) for x in open(self.list_file)]
+        self.video_list=[VideoRecord(x.strip().split()) for x in open(self.list_file)]
     
 if __name__ == '__main__':
     train_loader=data.DataLoader(

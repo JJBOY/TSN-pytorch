@@ -14,10 +14,28 @@ import utils
 best_prec1=0
 device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+'''
+#fake dataset to make sure the whole net archetecture 
+#is correct before to run on GPUs
+
+import torch.utils.data as data
+class mydataset(data.Dataset):
+    def __init__(self):
+        super(mydataset, self).__init__()
+    def __len__(self):
+        return 4
+    def __getitem__(self,index):
+        return torch.rand(9,224,224),1
+'''
+
+
 def main():
 
     global args,best_prec1
     args = parser.parse_args()
+
+    if not os.path.exists('./record'):
+        os.mkdir('./record')
 
     torch.backends.cudnn.benchmark=True
 
@@ -35,11 +53,7 @@ def main():
             dropout=args.dropout,partial_bn=args.partial_bn)
     from torchsummary import summary
     summary(model, input_size=(9, 224, 224))
-    return
-    # if args.partialbn:
-    #     model.module.partialBN(True)
-    # else:
-    #     model.module.partialBN(False)
+
 
     if args.gpus>1:
         model=torch.nn.DataParallel(model,device_ids=args.gpus).cuda()
@@ -75,7 +89,7 @@ def main():
         data_length=1
     else:
         data_length=5
-
+    
     train_loader = torch.utils.data.DataLoader(
         TSNDataSet(args.root_path, args.train_list, num_segments=args.num_segments,
                    new_length=data_length,
@@ -105,22 +119,32 @@ def main():
                    ])),
         batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
-    print(train_loader[0])
-    print(val_loader[0])
+    '''
+    train_loader = torch.utils.data.DataLoader(
+        mydataset(),
+        batch_size=args.batch_size, shuffle=True,
+        num_workers=args.workers, pin_memory=True)
+
+    val_loader = torch.utils.data.DataLoader(
+        mydataset(),
+        batch_size=args.batch_size, shuffle=False,
+        num_workers=args.workers, pin_memory=True)
     criterion=torch.nn.CrossEntropyLoss().to(device)
-   
+    '''
 
     for group in policies:
         print('group: {} has {} params lr_mult: {}'.format(
             group['name'], len(group['params']),group['lr_mult']))
 
-    optimizer=optim.SGD(policies,args.lr,momentum=args.momentum,weight_decay=args.weight_decay)
+    optimizer=optim.SGD(policies,args.lr,momentum=0.9,weight_decay=args.weight_decay)
 
     if args.evaluate:
         validate(val_loader,model,criterion,0,args)
         return
     best_epoch=start_epoch
     for epoch in range(start_epoch,args.epochs):
+
+        print('Epoch {}/{}'.format(epoch,args.epochs))
         train(train_loader,model,criterion,optimizer,epoch,args.clip_gradient)
         prec1=validate(val_loader,model,criterion,epoch)
 
@@ -142,7 +166,7 @@ def main():
         if epoch-best_epoch>10:
             return
         elif epoch-best_epoch>5:
-            utils.adjust_learning_rate(optimizer)
+            args.lr=utils.adjust_learning_rate(args.lr,optimizer)
 
 
 if __name__ == '__main__':

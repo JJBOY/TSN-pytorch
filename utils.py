@@ -71,7 +71,8 @@ def record_info(info, filename, mode):
     else:  # else it exists so append without writing the header
         df.to_csv(filename, mode='a', header=False, index=False, columns=column_names)
 
-def adjust_learning_rate(optimizer):
-    optimizer.lr=optimizer.lr*0.2
+def adjust_learning_rate(lr,optimizer):
+    lr*=0.2
     for param_group in optimizer.param_groups:
-        param_group['lr'] = optimizer.lr * param_group['lr_mult']
+        param_group['lr'] = lr * param_group['lr_mult']
+    return lr
