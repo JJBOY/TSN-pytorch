@@ -7,7 +7,7 @@ parser.add_argument('--dataset',type=str,choices=['ucf101','hmdb51','kinetics'],
 parser.add_argument('--modality',type=str,choices=['RGB','RGBDiff','Flow'],default='RGBDiff')
 parser.add_argument('--train_list',type=str,default='./raw/train_list.txt')
 parser.add_argument('--val_list',type=str,default='./raw/test_list.txt')
-parser.add_argument('--root_path',type=str,default='../C3D/raw/data/')
+parser.add_argument('--root_path',type=str,default='./raw/data/')
 
 #=======================model config==========================#
 parser.add_argument('--arch',type=str,default='resnet50')
