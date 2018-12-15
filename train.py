@@ -15,15 +15,10 @@ def train(train_loader,model,criterion,optimizer,epoch,clip_gradient=None):
     end=time.time()
     for i,(data,target) in enumerate(train_loader):
         data_time.update(time.time()-end)
-
         target=target.to(device)
         data=data.to(device)
-        
-
         output=model(data)
-        print(output.shape,target.shape)
         loss=criterion(output,target)
-
         prec1,prec5=accuracy(output.data,target,topk=(1,5))
         losses.update(loss.item(),data.size(0))
         top1.update(prec1.item(),data.size(0))
@@ -60,7 +55,7 @@ def validate(val_loader,model,criterion,epoch):
     losses = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
-    model.train()
+    model.eval()
 
     end=time.time()
 

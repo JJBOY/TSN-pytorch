@@ -1,9 +1,8 @@
 import torch.utils.data as data
-
+import random
 from PIL import Image
 import os
 import numpy as np 
-import random
 
 class VideoRecord(object):
     def __init__(self, row):
@@ -24,7 +23,7 @@ class VideoRecord(object):
 class TSNDataSet(data.Dataset):
     def __init__(self, root_path,list_file,num_segments=3,new_length=1,
                  modality='RGB',image_tmpl='{:05d}.jpg',transform=None,
-                 force_gray=False,random_shift=True,test_mode=False
+                 random_shift=True,test_mode=False
                  ):
         super(TSNDataSet, self).__init__()
         self.root_path=root_path
@@ -63,14 +62,14 @@ class TSNDataSet(data.Dataset):
             offsets=np.multiply(list(range(self.num_segments)),average_duration)+\
                     np.random.randint(0,average_duration,size=self.num_segments)
         elif record.num_frames>self.num_segments if self.modality=='RGB' else self.new_length:
-            offsets=np.sort(randint(record.num_segments-self.new_length+1,size=self.num_segments)) 
+            offsets=np.sort(random.randint(record.num_segments-self.new_length+1,size=self.num_segments))
         else:
             offsets=np.zeros((self.num_segments,))
         return offsets+1
 
     def _get_val_indices(self,record):
         if record.num_frames>self.num_segments+self.new_length-1:
-            tick=(record-self.new_length+1)/float(self.num_segments)
+            tick=(record.num_frames-self.new_length+1)/float(self.num_segments)
             offsets=np.array([int(tick*x) for x in range(self.num_segments)])
         else:
             offsets=np.zeros((self.num_segments,))
@@ -101,6 +100,7 @@ class TSNDataSet(data.Dataset):
         self.video_list=[VideoRecord(x.strip().split()) for x in open(self.list_file)]
     
 if __name__ == '__main__':
+    '''
     train_loader=data.DataLoader(
         TSNDataSet("","../raw/test_list.txt",num_segments=3,
             new_length=1,modality="RGB",
@@ -115,3 +115,5 @@ if __name__ == '__main__':
         batch_size=args.batch_size,shuffle=True,
         num_workers=args.workers,pin_memory=True
         )
+    '''
+    pass

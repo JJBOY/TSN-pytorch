@@ -3,7 +3,6 @@ import random
 from PIL import Image,ImageOps
 import numpy as np 
 import numbers
-import math
 import torch
 
 class GroupRandomCrop(object):
@@ -17,7 +16,7 @@ class GroupRandomCrop(object):
         w,h=img_group[0].size
         th,tw=self.size
 
-        out_imgs=list()
+        out_images=list()
 
         assert w-th>=0 and h-th>=0 ,\
             'the to be croped image should bot small than crop size'
@@ -42,8 +41,8 @@ class GroupCenterCrop(object):
     def __init__(self, size):
         self.worker=torchvision.transforms.CenterCrop(size)
 
-    def __call__(size,img_group):
-        return [self.worker(img) for img in img_group]
+    def __call__(slef,img_group):
+        return [slef.worker(img) for img in img_group]
 
 class GroupRandomHorizontalFlip(object):
     #Randomly horizontally flips the given PIL.Image with a probability of 0.5

@@ -1,8 +1,4 @@
-import argparse
 import os
-import time
-import torch
-import torchvision
 import torch.optim as optim
 from dataset.dataset import TSNDataSet
 from model.model import TSN 
@@ -50,15 +46,17 @@ def main():
 
     model=TSN(num_class,args.num_segments,args.modality,
             base_model=args.arch,consensus_type=args.consensus_type,
-            dropout=args.dropout,partial_bn=args.partial_bn)
-    from torchsummary import summary
-    summary(model, input_size=(9, 224, 224))
+            dropout=args.dropout,partial_bn=not args.nopartial_bn)
+
 
 
     if args.gpus>1:
         model=torch.nn.DataParallel(model,device_ids=args.gpus).cuda()
     else:
         model=model.to(device)
+
+    from torchsummary import summary
+    summary(model, input_size=(54, 224, 224))
 
     crop_size=model.crop_size
     scale_size=model.scale_size
@@ -94,7 +92,7 @@ def main():
         TSNDataSet(args.root_path, args.train_list, num_segments=args.num_segments,
                    new_length=data_length,
                    modality=args.modality,
-                   image_tmpl="{:05d}.jpg" if args.modality in ["RGB", "RGBDiff"] else args.flow_prefix+"{}_{:05d}.jpg",
+                   image_tmpl="{:05d}.jpg" if args.modality in ["RGB", "RGBDiff"] else "{}_{:05d}.jpg",
                    transform=torchvision.transforms.Compose([
                        train_augmentation,
                        Stack(roll=args.arch == 'BNInception'),
@@ -129,8 +127,9 @@ def main():
         mydataset(),
         batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
-    criterion=torch.nn.CrossEntropyLoss().to(device)
     '''
+
+    criterion=torch.nn.CrossEntropyLoss().to(device)
 
     for group in policies:
         print('group: {} has {} params lr_mult: {}'.format(
@@ -144,7 +143,7 @@ def main():
     best_epoch=start_epoch
     for epoch in range(start_epoch,args.epochs):
 
-        print('Epoch {}/{}'.format(epoch,args.epochs))
+        print('Epoch {}/{}'.format(epoch+1,args.epochs))
         train(train_loader,model,criterion,optimizer,epoch,args.clip_gradient)
         prec1=validate(val_loader,model,criterion,epoch)
 
@@ -166,6 +165,7 @@ def main():
         if epoch-best_epoch>10:
             return
         elif epoch-best_epoch>5:
+            print('epoch {} best epoch{}'.format(epoch+1,best_epoch+1))
             args.lr=utils.adjust_learning_rate(args.lr,optimizer)
 
 

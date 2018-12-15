@@ -1,0 +1,5 @@
+record/RGB/*.pth
+record/RGBDiff/*.pth
+__pycache__/
+dataset/__pycache__
+model/__pycache__

@@ -1,9 +1,8 @@
 import torch
 import torch.nn as nn
 import torchvision
-from .ops import ConsensusModule, Identity
+from .ops import ConsensusModule
 import numpy as np 
-import os
 
 from dataset.transforms import GroupMultiScaleCrop,GroupRandomHorizontalFlip
 class TSN(nn.Module):
@@ -75,12 +74,12 @@ class TSN(nn.Module):
         base_out=base_out.view((-1,self.num_segments)+base_out.size()[1:])
         output=self.consensus(base_out)
 
-        return output.squeeze()#(batch*num_classes)
+        return output.squeeze(1)#(batch,num_classes)
 
     def _prepare_base_model(self,base_model):
         #返回基础网络结构
         if 'resnet' in base_model or 'vgg' in base_model:
-            self.base_model=getattr(torchvision.models,base_model)(pretrained=False)
+            self.base_model=getattr(torchvision.models,base_model)(pretrained=True)
             self.base_model.last_layer_name='fc'
             self.input_size=224
             self.input_mean = [0.485, 0.456, 0.406]
@@ -110,8 +109,8 @@ class TSN(nn.Module):
 
         std=0.001
         if self.new_fc is None:
-            normal_(getattr(self.base_model, self.base_model.last_layer_name).weight, 0, std)
-            constant_(getattr(self.base_model, self.base_model.last_layer_name).bias, 0)
+            nn.init.normal_(getattr(self.base_model, self.base_model.last_layer_name).weight, 0, std)
+            nn.init.constant_(getattr(self.base_model, self.base_model.last_layer_name).bias, 0)
         else:
             nn.init.normal_(self.new_fc.weight, 0, std)
             nn.init.constant_(self.new_fc.bias, 0)
@@ -169,7 +168,7 @@ class TSN(nn.Module):
         new_data=input_view[:,:,1:,:,:,:].clone()
 
         for x in reversed(list(range(1,self.new_length+1))):
-            new_data[:,:,x-1,:,:,:]=input_view[:,:,x:,:,:]-input_view[:,:,x-1,:,:,:]
+            new_data[:,:,x-1,:,:,:]=input_view[:,:,x,:,:,:]-input_view[:,:,x-1,:,:,:]
 
         return new_data   
 
