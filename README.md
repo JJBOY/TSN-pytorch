@@ -23,9 +23,24 @@ Pytorch impelementation for Temporal Segment Networks (TSN) in ECCV 2016
 
 | Modality | Top1 Accuracy   |  Top5 Accuracy      |
 | :------: | :-------------: | :----: |
-|   RGB    | 73.80% | 92.55% |
-| RGBDiff  | 67.78% | 87.81% |
-| Fusion   | 81.52% | 95.70% |
+|   RGB1   | 77.37% | 93.55% |
+| RGB2 | 78.19% | 94.48% |
+| RGBDiff1 | 71.53% | 89.93% |
+| RGBDiff2 | 72.11% | 92.86% |
+| Fusion RGB1+RGBDiff1 | 81.52% | 95.70% |
+| Fusion RGB2+RGBDiff2 | 82.37% | __96.56%__ |
+| Fusion RGB1+RGBDiff2 | __83.06%__ | 96.17% |
+| Fusion RGB2+RGBDiff1 | 80.15% | 95.35% |
+| Fusion RGB1+RGB2 | 77.48% | 92.97% |
+| Fusion RGBDiff1+RGBDiff2 | 34.55% | 67.27% |
+
+因为双流结合有点类似于集成学习，为了对比到底是多模态起了作用还是集成模型起了作用，我增加了对比实验。从对比中可以看出，集成两个相同的模型反而正确率有所下降，特别是RGBDiff下降的十分厉害，这非常奇怪，其中的原因还有待进一步研究。说明RGB和RGBDiff这两个模态还是能互补的。
+
+下一步将增加光流模态的对比和在更大数据集上的实验，__如果哪位有Kinetics的百度云请分享一下__，小弟感激不尽，自己去下载实在是太慢了。。。
+
+
+
+
 
 环境配好了之后需要下载我的预训练模型：
 
