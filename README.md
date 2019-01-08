@@ -38,6 +38,19 @@ Pytorch impelementation for Temporal Segment Networks (TSN) in ECCV 2016
 
 下一步将增加光流模态的对比和在更大数据集上的实验，__如果哪位有Kinetics的百度云请分享一下__，小弟感激不尽，自己去下载实在是太慢了。。。
 
+新一轮的评估，支持了在视频的基础上直接操作，不用把视频先处理成图片。
+
+| Modality | Top1 Accuracy   |  Top5 Accuracy      |
+| :------: | :-------------: | :----: |
+| RGB     | 79.46% | 93.34% |
+| RGBDiff interval=1     | 72.56% | 90.77% |
+| RGBDiff interval=2     | 76.87% | 93.10% |
+| FLow interval=1     | 66.51% | 88.77% |
+| FLow interval=2     | 66.77% | 89.11% |
+| RGB+RGBDiff     | 84.67% | 96.67% |
+| RGB+Flow        | 82.69% | 95.98% |
+
+NOTE：Fusion的时候都是默认interval=2.interval的意思是在视频中取帧的间隔。
 
 
 

@@ -1,10 +1,22 @@
 import os
+import cv2
+
 
 def count_frames(path):
     frame_count=len(os.listdir(path))
     assert frame_count > 0, \
         "VideoIter:: Video: `{}' has no frames".format(path)
     return frame_count
+'''
+def count_frames(path):
+    cap = cv2.VideoCapture(path)
+    assert cap.isOpened()==True,"Can not open video: `{}'".format(path)
+    frame_count=int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    frame_count=frame_count-1-frame_count//10
+    assert frame_count > 0, \
+        "VideoIter:: Video: `{}' has no frames".format(path)
+    return frame_count
+'''
 
 def get_file_list(video_prefix,txt_list,cached_info_path):
 
@@ -36,5 +48,5 @@ def get_file_list(video_prefix,txt_list,cached_info_path):
     
 
 if __name__ == '__main__':
-    get_file_list('./data','./list_cvt/trainlist01.txt','train_list.txt')
-    get_file_list('./data','./list_cvt/testlist01.txt','test_list.txt')
+    get_file_list('/home/qx/project/data/UCF101/tvl1_flow/u','./list_cvt/trainlist01.txt','train_list.txt')
+    get_file_list('/home/qx/project/data/UCF101/tvl1_flow/u','./list_cvt/testlist01.txt','test_list.txt')
