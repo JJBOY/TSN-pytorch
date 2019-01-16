@@ -3,6 +3,7 @@ import random
 from PIL import Image
 import os
 import numpy as np 
+import cv2
 
 class VideoRecord(object):
     def __init__(self, row):
@@ -23,7 +24,7 @@ class VideoRecord(object):
 class TSNDataSet(data.Dataset):
     def __init__(self, root_path,list_file,num_segments=3,new_length=1,
                  modality='RGB',image_tmpl='{:05d}.jpg',transform=None,
-                 random_shift=True,test_mode=False
+                 random_shift=True,test_mode=False,On_Video=False
                  ):
         super(TSNDataSet, self).__init__()
         self.root_path=root_path
@@ -35,6 +36,7 @@ class TSNDataSet(data.Dataset):
         self.transform = transform
         self.random_shift = random_shift
         self.test_mode = test_mode
+        self.On_Video=On_Video
 
         if self.modality=='RGBDiff':
             self.new_length+=1 
@@ -77,13 +79,28 @@ class TSNDataSet(data.Dataset):
 
     def _get(self,record,indices):
         images=list()
-        for seg_ind in indices:
-            p=int(seg_ind)
-            for i in range(self.new_length):
-                seg_imgs=self._load_image(os.path.join(self.root_path,record.path),p)
-                images.extend(seg_imgs)
-                if p<record.num_frames:
-                    p+=1
+
+        if self.On_Video==False:
+            for seg_ind in indices:
+                p=int(seg_ind)
+                for i in range(self.new_length):
+                    seg_imgs=self._load_image(os.path.join(self.root_path,record.path),p)
+                    images.extend(seg_imgs)
+                    if p<record.num_frames:
+                        p+=1
+        else:
+            cap=cv2.VideoCapture(os.path.join(self.root_path,record.path))
+            for seg_ind in indices:
+                p=int(seg_ind)
+                for i in range(self.new_length):
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, p)
+                    _, frame = cap.read()
+                    seg_imgs=Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)) 
+                    images.extend(seg_imgs)
+                    if p<record.num_frames:
+                        p+=1
+            cap.release()
+
         #(segment*sample_len,w,h,c)
         process_data=self.transform(images)
         return process_data,record.label
