@@ -48,7 +48,7 @@ def record_info(info, filename, mode):
             'Prec@5 {top5}\n'
             'LR {lr}\n'.format(batch_time=info['Batch Time'], epoch_time=info['Epoch Time'],
                                data_time=info['Data Time'], loss=info['Loss'],
-                               top1=info['Prec@1'], top5=info['Prec@5'],lr=info['lr']))
+                               top1=info['Prec@1'], top5=info['Prec@5'], lr=info['lr']))
         print(result)
 
         df = pd.DataFrame.from_dict(info)
@@ -71,8 +71,9 @@ def record_info(info, filename, mode):
     else:  # else it exists so append without writing the header
         df.to_csv(filename, mode='a', header=False, index=False, columns=column_names)
 
-def adjust_learning_rate(lr,optimizer):
-    lr*=0.2
+
+def adjust_learning_rate(lr, optimizer):
+    lr *= 0.2
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr * param_group['lr_mult']
     return lr
