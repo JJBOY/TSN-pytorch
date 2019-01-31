@@ -66,8 +66,8 @@ class TSNDataSet(data.Dataset):
         if average_duration > 0:
             offsets = np.multiply(list(range(self.num_segments)), average_duration) + \
                       np.random.randint(0, average_duration, size=self.num_segments)
-        elif record.num_frames > self.num_segments if self.modality == 'RGB' else self.new_length * self.interval:
-            offsets = np.sort(random.randint(record.num_segments - self.new_length * self.interval + 1, size=self.num_segments))
+        elif record.num_frames > self.new_length * self.interval:
+            offsets = np.sort(np.random.randint(record.num_frames - self.new_length * self.interval + 1, size=self.num_segments))
         else:
             offsets = np.zeros((self.num_segments,))
         return offsets + 1
@@ -89,18 +89,22 @@ class TSNDataSet(data.Dataset):
                 for i in range(self.new_length):
                     seg_imgs = self._load_image(record.path, p)
                     images.extend(seg_imgs)
-                    if p < record.num_frames:
+                    if p +self.interval< record.num_frames:
                         p += self.interval
         else:
-            cap = cv2.VideoCapture(os.path.join(self.root_path, record.path + '.avi'))
+            #cap = cv2.VideoCapture(os.path.join(self.root_path, record.path + '.avi'))
+            cap = cv2.VideoCapture(os.path.join(self.root_path, record.path))
             for seg_ind in indices:
                 p = int(seg_ind) - 1
                 for i in range(self.new_length):
                     cap.set(cv2.CAP_PROP_POS_FRAMES, p)
                     res, frame = cap.read()
-                    seg_imgs = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                    try:
+                        seg_imgs = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                    except:
+                        print('Error in read video',os.path.join(self.root_path, record.path) ,p,'/', record.num_frames)
                     images.append(seg_imgs)
-                    if p < record.num_frames:
+                    if p+ self.interval< record.num_frames:
                         p += self.interval
             cap.release()
 

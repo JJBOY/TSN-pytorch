@@ -88,3 +88,54 @@ def validate(path,val_loader, model, criterion, epoch):
     else:
         print(info)
     return top1.avg
+
+def test(val_loader, model, num_classes):
+    batch_time = AverageMeter()
+    data_time = AverageMeter()
+    top1 = AverageMeter()
+    top5 = AverageMeter()
+    model.eval()
+
+    end = time.time()
+
+    class_num = np.array([0] * num_classes)
+    class_prec1 = np.array([0] * num_classes)
+    class_prec5 = np.array([0] * num_classes)
+
+    with torch.no_grad():
+        for i, (data, target) in enumerate(val_loader):
+            data_time.update(time.time() - end)
+            target = target.to(device)
+            data = data.to(device)
+            output = model(data)
+
+            #def class_accuracy(outputs, targets, num_classes, topk=(1,), ):
+            (prec1, prec5) ,( class_prec1_t ,class_prec5_t ), class_num_t  \
+                = class_accuracy(output.data, target,num_classes ,topk=(1, 5))
+
+            class_num+=class_num_t
+            class_prec1+=class_prec1_t
+            class_prec5+=class_prec5_t
+
+            top1.update(prec1.item(), data.size(0))
+            top5.update(prec5.item(), data.size(0))
+            batch_time.update(time.time() - end)
+            end = time.time()
+
+    info = {
+            'Batch Time': [round(batch_time.avg, 3)],
+            'Epoch Time': [round(batch_time.sum, 3)],
+            'Data Time': [round(data_time.avg, 3)],
+            'Prec@1': [round(top1.avg, 4)],
+            'Prec@5': [round(top5.avg, 4)],
+            }
+
+    print(info)
+
+
+    print(np.argsort(class_prec1/class_num))
+    print(np.sort(class_prec1/class_num))
+    print()
+    print(np.argsort(class_prec5/class_num))
+    print(np.sort(class_prec5/class_num))
+

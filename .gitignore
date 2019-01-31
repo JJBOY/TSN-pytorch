@@ -1,6 +1,1 @@
-record/RGB/*.pth
-record/RGBDiff/*.pth
-record/Flow/*.pth
-__pycache__/
-dataset/__pycache__
-model/__pycache__
+record/
