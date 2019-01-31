@@ -3,7 +3,9 @@ Pytorch impelementation for Temporal Segment Networks (TSN) in ECCV 2016
 
 [原始版本实现](https://github.com/yjxiong/tsn-pytorch)，我只是稍微做了改动，自己训练了模型。
 
-这个版本不需要光流，只用到了RGBDiff，需要训练光流的模态需要去使用[dense flow](https://github.com/yjxiong/dense_flow/tree/c9369a32ea491001db5298dfda1fa227a912d34f)提取光流。
+~~这个版本不需要光流，只用到了RGBDiff，需要训练光流的模态需要去使用[dense flow](https://github.com/yjxiong/dense_flow/tree/c9369a32ea491001db5298dfda1fa227a912d34f)提取光流。~~
+
+增加了光流的实验(update)。
 
 ## Dependency
 
@@ -38,7 +40,7 @@ Pytorch impelementation for Temporal Segment Networks (TSN) in ECCV 2016
 
 下一步将增加光流模态的对比和在更大数据集上的实验，__如果哪位有Kinetics的百度云请分享一下__，小弟感激不尽，自己去下载实在是太慢了。。。
 
-新一轮的评估，支持了在视频的基础上直接操作，不用把视频先处理成图片。
+__update__:新一轮的评估，支持了在视频的基础上直接操作，不用把视频先处理成图片。
 
 | Modality | Top1 Accuracy   |  Top5 Accuracy      |
 | :------: | :-------------: | :----: |

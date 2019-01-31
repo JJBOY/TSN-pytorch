@@ -2,9 +2,9 @@
 
 # convert the avi video to images
 #   Usage (sudo for the remove priviledge):
-#       sudo ./convert_video_to_images.sh path/to/video fps
+#       sudo ./video2images.sh path/to/video fps
 #   Example Usage:
-#       sudo ./convert_video_to_images.sh ~/document/videofile/ 5
+#       sudo ./video2images.sh ~/document/videofile/ 5
 #   Example Output:
 #       ~/document/videofile/walk/video1.avi 
 #       #=>
