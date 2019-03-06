@@ -54,7 +54,13 @@ __update__:新一轮的评估，支持了在视频的基础上直接操作，不
 
 NOTE：Fusion的时候都是默认interval=2.interval的意思是在视频中取帧的间隔。
 
+__update__:新一轮的评估，支持更大的数据集something something
 
+| Modality | Top1 Accuracy   |  Top5 Accuracy      |
+| :------: | :-------------: | :----: |
+| RGB     | 21.6% | 49.3% |
+| RGBDiff | 26.5% | 55.6% |
+| RGBDiff+RGB | 32.2% | 61.7% |
 
 
 环境配好了之后需要下载我的预训练模型：
