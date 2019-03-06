@@ -4,11 +4,11 @@ parser = argparse.ArgumentParser(
     description="Pytorch impelementation of  Temporal Segment Networks"
 )
 
-parser.add_argument('--dataset', type=str, choices=['ucf101', 'hmdb51', 'kinetics','sthsth'], default='ucf101')
+parser.add_argument('--dataset', type=str, choices=['ucf101', 'hmdb51', 'kinetics','sthsth'], default='sthsth')
 parser.add_argument('--modality', type=str, choices=['RGB', 'RGBDiff', 'Flow'], default='RGB')
-parser.add_argument('--train_list', type=str, default='./raw/train_list.txt')
-parser.add_argument('--val_list', type=str, default='./raw/test_list1.txt')
-parser.add_argument('--root_path', type=str, default='/home/qx/project/data/UCF101/raw-data/')
+parser.add_argument('--train_list', type=str, default='/home/qx/project/data/sthsth/train.txt')
+parser.add_argument('--val_list', type=str, default='/home/qx/project/data/sthsth/test.txt')
+parser.add_argument('--root_path', type=str, default='/home/qx/project/data/sthsth/data/')
 parser.add_argument('--On_Video', type=bool, default=True)
 parser.add_argument('--interval', type=int, default=2)
 parser.add_argument('--record_path', type=str, default='record/')
