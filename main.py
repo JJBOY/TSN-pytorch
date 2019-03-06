@@ -4,7 +4,7 @@ from dataset.dataset import TSNDataSet
 from model.model import TSN
 from dataset.transforms import *
 from config import parser
-from train import train, validate
+from train import train, validate , test
 import utils
 
 best_prec1 = 0
@@ -40,6 +40,8 @@ def main():
         num_class = 51
     elif args.dataset == 'kinetics':
         num_class = 400
+    elif args.dataset == 'sthsth':
+        num_class = 174
     else:
         raise ValueError('Unknown dataset' + args.dataset)
 
@@ -139,8 +141,9 @@ def main():
     optimizer = optim.SGD(policies, args.lr, momentum=0.9, weight_decay=args.weight_decay)
 
     if args.evaluate:
-        validate(None,val_loader, model, criterion, 0)
+        test(val_loader, model, num_class)
         return
+
     best_epoch = start_epoch
     for epoch in range(start_epoch, args.epochs):
 
@@ -172,3 +175,32 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+    # import cv2
+    # import matplotlib.pyplot as plt
+    # import numpy as np
+    #
+    # cap = cv2.VideoCapture('/home/qx/project/data/sthsth/data/123022.webm')
+    #
+    # frame_counts = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    # print('count frames ', frame_counts)
+    # imglist = []
+    # for i in range(frame_counts):
+    #     cap.set(cv2.CAP_PROP_POS_FRAMES, i)
+    #     res, frame = cap.read()
+    #
+    #     if res:
+    #         imglist.append(frame)
+    #         cv2.imshow("capture", frame)
+    #     else:
+    #         print(i, res)
+    #
+    #     if cv2.waitKey(50) & 0xFF == ord('q'):
+    #         break
+    # imglist = np.array(imglist[::8])
+    # print(imglist.shape)
+    # imglist = imglist.transpose((1, 0, 2, 3)).reshape(240, -1, 3)
+    # plt.imshow(imglist)
+    # plt.show()
+    #
+    #
