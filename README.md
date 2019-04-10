@@ -21,7 +21,6 @@ Pytorch impelementation for Temporal Segment Networks (TSN) in ECCV 2016
 
 训练和测试都只用到了split1，全都用上的应该能进一步提升。
 
-注意：这里的效果比原论文要高不少，原因主要在于原论文使用的是BN-Inception，我使用的是ResNet101，但是我没在BN-Inception上测试。
 
 | Modality | Top1 Accuracy   |  Top5 Accuracy      |
 | :------: | :-------------: | :----: |
